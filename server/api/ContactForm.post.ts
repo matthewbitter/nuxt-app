@@ -1,3 +1,5 @@
+import { FieldValue } from "firebase-admin/firestore";
+
 export default defineEventHandler(async (event) =>
 {
 
@@ -70,6 +72,15 @@ export default defineEventHandler(async (event) =>
     }
 
     await storage.setItem(storageKey, new Date().toISOString());
+
+    const database = FirestoreDatabase;
+    const document = database.collection("ContactForm");
+
+    document.add({
+        ...body,
+        CreatedAt: FieldValue.serverTimestamp(),
+        ClientIPAddress: clientIPAddress
+    });
 
     return {
         success: true
