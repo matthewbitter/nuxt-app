@@ -23,6 +23,9 @@ export default defineNuxtConfig({
         // Private keys (Server-side only)
         RecaptchaSecretKey: "",
         FirebaseServiceAccountKey: "",
+        ResendApiKey: "",
+        PersonalEmail: "",
+        NoReplyEmail: "",
 
         // Public keys (Server and Client-side)
         public: {

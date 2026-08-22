@@ -1,9 +1,10 @@
 import { FieldValue } from "firebase-admin/firestore";
+import { Resend } from "resend";
 
 export default defineEventHandler(async (event) =>
 {
 
-    const body = await readBody(event);
+    const body: ContactForm = await readBody(event);
 
     const clientIPAddress = getRequestIP(event, { xForwardedFor: true });
     const storageKey = `cache:form-submit:${clientIPAddress}`;
@@ -43,7 +44,7 @@ export default defineEventHandler(async (event) =>
 
     const secretKey = useRuntimeConfig(event).RecaptchaSecretKey;
 
-    if (!secretKey)
+    if (!secretKey || !body.token)
     {
 
         throw createError({
@@ -78,14 +79,41 @@ export default defineEventHandler(async (event) =>
 
     delete body.token;
 
-    document.add({
+    await document.add({
         ...body,
         CreatedAt: FieldValue.serverTimestamp(),
         ClientIPAddress: clientIPAddress
     });
+
+    const resendApiKey = useRuntimeConfig(event).ResendApiKey;
+    const resend = new Resend(resendApiKey);
+
+    body.Name = body.Name.replace(/<[^>]*>/g, "");
+    body.Email = body.Email.replace(/<[^>]*>/g, "");
+    body.Message = body.Message.replace(/<[^>]*>/g, "");
+
+    await resend.emails.send(({
+        from: useRuntimeConfig(event).PersonalEmail,
+        to: useRuntimeConfig(event).PersonalEmail,
+        subject: `Contact Form (${body.Name})`,
+        html: `<p>${clientIPAddress}</p><p>${body.Email}</p><p>${body.Message}</p>`
+    }));
 
     return {
         success: true
     };
 
 });
+
+
+interface ContactForm
+{
+
+    Name: string
+    Email: string
+    Message: string
+    CreatedAt: FieldValue
+    PhoneNumber?: string
+    token?: string
+
+}
