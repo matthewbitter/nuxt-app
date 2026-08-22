@@ -6,8 +6,7 @@ export default defineNuxtConfig({
         "@nuxt/image",
         "@nuxt/scripts",
         "@pinia/nuxt",
-        "@nuxt/icon",
-        "nuxt-vuefire"
+        "@nuxt/icon"
     ],
 
     devtools: {
@@ -23,6 +22,7 @@ export default defineNuxtConfig({
     runtimeConfig: {
         // Private keys (Server-side only)
         RecaptchaSecretKey: "",
+        FirebaseServiceAccountKey: "",
 
         // Public keys (Server and Client-side)
         public: {
@@ -63,19 +63,6 @@ export default defineNuxtConfig({
                 trigger: "onNuxtReady"
             }
         }
-    },
-
-    vuefire: {
-        auth: true, // Enables Firebase Authentication
-        config: {
-            apiKey: process.env.FIREBASE_API_KEY,
-            authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-            projectId: process.env.FIREBASE_PROJECT_ID,
-            storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-            messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-            appId: process.env.FIREBASE_APP_ID
-        }
-
     }
 
 });

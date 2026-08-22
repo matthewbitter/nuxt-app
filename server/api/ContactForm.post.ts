@@ -76,6 +76,8 @@ export default defineEventHandler(async (event) =>
     const database = FirestoreDatabase;
     const document = database.collection("ContactForm");
 
+    delete body.token;
+
     document.add({
         ...body,
         CreatedAt: FieldValue.serverTimestamp(),
